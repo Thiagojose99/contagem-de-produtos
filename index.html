@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title> P.A.R </title>
+</head>
+<body>
+    <div class="container">
+        <h1>P.A.R</h1>
+        <div class="card">
+            <label for="produtos">Escolha o produto:</label>
+            <select id="produtos">
+                <option value="Nutella 140g">Nutella 140g</option>
+                <option value="Nutella 350g">Nutella 350g</option>
+                <option value="Nutella 650g">Nutella 650g</option>
+                <option value="Picanha Chef">Picanha Chef</option>
+                <option value="Picanha Frigol">Picanha Frigol</option>
+                <option value="Picanha Tradicional">Picanha Tradicional</option>
+                <option value="Picanha Steak House">Picanha Steak House</option>
+                <option value="File Mignon">File Mignon</option>
+            </select>
+
+            <label for="quantidade">Quantidade Contada:</label>
+            <input type="number" id="quantidade" min="0" placeholder="Ex: 5">
+            
+            <button class="btn-confirmar" onclick="salvarDados()">Confirmar Contagem</button>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="btn-link" onclick="window.location.href='relatorio.html'">Ir para Relatório</button>
+        </div>
+    </div>
+
+    <script>
+        // Estoque fictício para o cálculo de vendas
+        const estoqueRef = {
+            "Nutella 140g": 100, 
+            "Nutella 350g": 50, "Nutella 650g": 30,
+            "Picanha Chef": 20, "Picanha Frigol": 15, "Picanha Tradicional": 25, "Picanha Steak House": 20, "File Mignon": 10
+        };
+
+        function salvarDados() {
+            const produto = document.getElementById('produtos').value;
+            const qtd = document.getElementById('quantidade').value;
+
+            if (qtd === "") return alert("Digite a quantidade!");
+
+            const agora = new Date();
+            const novoItem = {
+                data: agora.toLocaleDateString('pt-BR'),
+                hora: agora.getHours().toString().padStart(2, '0') + ":00",
+                nome: produto,
+                inicial: estoqueRef[produto],
+                contado: parseInt(qtd),
+                vendido: estoqueRef[produto] - parseInt(qtd)
+            };
+
+            let banco = JSON.parse(localStorage.getItem('dados_estoque')) || [];
+            banco.push(novoItem);
+            localStorage.setItem('dados_estoque', JSON.stringify(banco));
+
+            alert("✅ Salvo com sucesso!");
+            document.getElementById('quantidade').value = "";
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,98 @@
+      <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Relatório de Vendas</title>
+</head>
+<body>
+    <div class="container-relatorio">
+        <h1>Histórico de Movimentação</h1>
+        
+        <div class="acoes-topo">
+            <button class="btn-excel" onclick="exportarExcel()">📊 Baixar Excel</button>
+            <button class="btn-limpar" onclick="limparTudo()">Limpar Tudo</button>
+        </div>
+
+        <div id="lista-tabelas"></div>
+
+        <button class="btn-voltar" onclick="window.location.href='index.html'">← Voltar para Início</button>
+    </div>
+
+    <script>
+        function carregarDados() {
+            const dados = JSON.parse(localStorage.getItem('dados_estoque')) || [];
+            const container = document.getElementById('lista-tabelas');
+            
+            if(dados.length === 0) {
+                container.innerHTML = "<p style='text-align:center'>Nenhum registro encontrado.</p>";
+                return;
+            }
+
+            // Agrupar por hora
+            const grupos = {};
+            dados.forEach(d => {
+                const titulo = `${d.data} - ${d.hora}`;
+                if(!grupos[titulo]) grupos[titulo] = [];
+                grupos[titulo].push(d);
+            });
+
+            for (const [horario, itens] of Object.entries(grupos)) {
+                let tabelaHTML = `
+                    <div class="bloco-hora">
+                        <h3>⏰ ${horario}</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Inicial</th>
+                                    <th>Contado</th>
+                                    <th>Vendido</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                itens.forEach(i => {
+                    tabelaHTML += `
+                        <tr>
+                            <td>${i.nome}</td>
+                            <td>${i.inicial}</td>
+                            <td><b>${i.contado}</b></td>
+                            <td class="txt-venda">${i.vendido}</td>
+                        </tr>
+                    `;
+                });
+                tabelaHTML += `</tbody></table></div>`;
+                container.innerHTML += tabelaHTML;
+            }
+        }
+
+        function exportarExcel() {
+            const dados = JSON.parse(localStorage.getItem('dados_estoque')) || [];
+            if(dados.length === 0) return alert("Sem dados para exportar!");
+
+            let csv = "Data;Hora;Produto;Estoque Inicial;Contado;Vendido\n";
+            dados.forEach(d => {
+                csv += `${d.data};${d.hora};${d.nome};${d.inicial};${d.contado};${d.vendido}\n`;
+            });
+
+            // \ufeff garante que o Excel reconheça acentos (UTF-8)
+            const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "relatorio_par.csv";
+            link.click();
+        }
+
+        function limparTudo() {
+            if(confirm("Deseja apagar todos os dados?")) {
+                localStorage.removeItem('dados_estoque');
+                location.reload();
+            }
+        }
+
+        window.onload = carregarDados;
+    </script>
+</body>
+</html>
