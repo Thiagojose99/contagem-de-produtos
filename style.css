@@ -1,19 +1,25 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Flamenco:wght@300;400&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Orbitron:wght@400..900&family=Vend+Sans:ital,wght@0,300..700;1,300..700&display=swap');
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f7f6;
-    color: #333;
+    font-family: "Flamenco", system-ui;
+    font-weight: 600;
+   font-style: normal;
+    background-color: #071335;
+    color: #360404;
     display: flex;
     justify-content: center;
     padding: 20px;
 }
 
 .container, .container-relatorio {
-    background: white;
+    background: rgb(236, 236, 240);
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     width: 100%;
     max-width: 600px;
+    margin-top: 110px;
 }
 
 h1 { 
@@ -62,15 +68,40 @@ button {
 }
 
 .btn-confirmar:hover { 
-    background-color: #219150; 
+    background-color: #05381a; 
+    color: #b6cec0;
 }
 
 .btn-acao {
-    background-color: #34495e;
+    background-color: #106bc7;
     color: white;
     margin-top: 10px;
 }
-
+.btn-link:hover {
+    background-color: #0e33ac;
+    color: white;
+    margin-top: 10px;
+}
+.btn-excel{
+    background-color: #189b13;
+    color: white;
+    margin-top: 10px;
+}
+.btn-excel:hover {
+    background-color: #66a863;
+    color: white;
+    margin-top: 10px;
+}
+.btn-limpar:hover {
+    background-color: #c0392b;
+    color: white;
+    margin-top: 10px;
+}
+.btn-voltar:hover {
+    background-color: #0e33ac;
+    color: white;
+    margin-top: 10px;
+}
 table {
     width: 100%;
     border-collapse: collapse;
