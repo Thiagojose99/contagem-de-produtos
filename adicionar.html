@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>P.A.R - Gerenciar Produtos</title>
+    <style>
+        /* Estilo extra para a tabela de gerenciamento */
+        .tabela-gerenciamento {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .tabela-gerenciamento th, .tabela-gerenciamento td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .tabela-gerenciamento th {
+            background-color: #f8f9fa;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .btn-excluir {
+            background-color: #ff7675;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .btn-excluir:hover { background-color: #d63031; }
+        .secao-lista { margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Configurar Produtos</h1>
+        
+        <div class="card">
+            <label for="nome-produto">Nome do Produto:</label>
+            <input type="text" id="nome-produto" placeholder="Ex: Nutella 140g">
+
+            <label for="qtd-inicial">Quantidade (Estoque Inicial):</label>
+            <input type="number" id="qtd-inicial" min="0" placeholder="Ex: 10">
+            
+            <button class="btn-confirmar" onclick="adicionarProduto()">Salvar Produto</button>
+        </div>
+
+        <div class="secao-lista">
+            <h3>Produtos Cadastrados</h3>
+            <table class="tabela-gerenciamento">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Estoque Inicial</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="corpo-tabela">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="btn-link" onclick="window.location.href='index.html'">← Voltar para Contagem</button>
+        </div>
+    </div>
+
+    <script>
+        // Função para Adicionar ou Somar Produto
+        function adicionarProduto() {
+            const nome = document.getElementById('nome-produto').value.trim();
+            const qtdNova = parseInt(document.getElementById('qtd-inicial').value);
+
+            if (!nome || isNaN(qtdNova)) {
+                return alert("Por favor, preencha o nome e a quantidade!");
+            }
+
+            let estoqueConfig = JSON.parse(localStorage.getItem('estoque_config')) || {};
+
+            if (estoqueConfig[nome] !== undefined) {
+                const qtdAtual = estoqueConfig[nome];
+                const desejaSomar = confirm(
+                    `O produto "${nome}" já existe com ${qtdAtual} unidades.\n\n` +
+                    `Clique em OK para SOMAR (+${qtdNova})\n` +
+                    `Clique em CANCELAR para SUBSTITUIR por ${qtdNova}`
+                );
+
+                if (desejaSomar) {
+                    estoqueConfig[nome] = qtdAtual + qtdNova;
+                } else {
+                    estoqueConfig[nome] = qtdNova;
+                }
+            } else {
+                estoqueConfig[nome] = qtdNova;
+            }
+
+            localStorage.setItem('estoque_config', JSON.stringify(estoqueConfig));
+            
+            // Limpa os campos
+            document.getElementById('nome-produto').value = "";
+            document.getElementById('qtd-inicial').value = "";
+            
+            atualizarTabela();
+        }
+
+        // Função para Apagar Produto da Lista
+        function apagarProduto(nome) {
+            if (confirm(`Tem certeza que deseja excluir o produto "${nome}"?`)) {
+                let estoqueConfig = JSON.parse(localStorage.getItem('estoque_config')) || {};
+                delete estoqueConfig[nome];
+                localStorage.setItem('estoque_config', JSON.stringify(estoqueConfig));
+                atualizarTabela();
+            }
+        }
+
+        // Função para mostrar a tabela na tela
+        function atualizarTabela() {
+            const estoqueConfig = JSON.parse(localStorage.getItem('estoque_config')) || {};
+            const corpoTabela = document.getElementById('corpo-tabela');
+            
+            corpoTabela.innerHTML = ""; // Limpa a tabela antes de redesenhar
+
+            const nomes = Object.keys(estoqueConfig);
+
+            if (nomes.length === 0) {
+                corpoTabela.innerHTML = "<tr><td colspan='3' style='text-align:center'>Nenhum produto cadastrado.</td></tr>";
+                return;
+            }
+
+            nomes.forEach(nome => {
+                const qtd = estoqueConfig[nome];
+                const linha = `
+                    <tr>
+                        <td>${nome}</td>
+                        <td>${qtd}</td>
+                        <td>
+                            <button class="btn-excluir" onclick="apagarProduto('${nome}')">Apagar</button>
+                        </td>
+                    </tr>
+                `;
+                corpoTabela.innerHTML += linha;
+            });
+        }
+
+        // Carrega a tabela assim que a página abre
+        window.onload = atualizarTabela;
+    </script>
+</body>
+</html>
