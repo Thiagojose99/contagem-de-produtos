@@ -4,90 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Produtos SuperBom</title>
+    <title>P.A.R - Início</title>
 </head>
 <body>
     <div class="container">
         <h1>P.A.R</h1>
+        
         <div class="card">
-            <label for="produtos">Escolha o produto:</label>
-            <select id="produtos">
-                <option value="">Carregando produtos...</option>
-            </select>
+            <label>Quem está contando?</label>
+            <select id="select-operador"></select>
 
-            <label for="quantidade">Quantidade:</label>
-            <input type="number" id="quantidade" min="0" placeholder="Ex: 5">
-            
+            <label>Selecione o Produto:</label>
+            <select id="select-produto"></select>
+
+            <label>Quantidade na Prateleira:</label>
+            <input type="number" id="quantidade" placeholder="Digite o valor">
+        </div>
+
+        <div class="botoes-lado-a-lado">
             <button class="btn-confirmar" onclick="salvarDados()">Confirmar</button>
+            <button class="btn-link" onclick="window.location.href='relatorio.html'">Relatório</button>
         </div>
 
-        <div class="nav-buttons">
-            <button class="btn-link" onclick="window.location.href='relatorio.html'">Ir para Relatório</button>
-            <button class="btn-acao" onclick="window.location.href='adicionar.html'" style="margin-top: 10px; background-color: #7f8c8d; color: white; width: 100%; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;">Configurar Produtos</button>
-        </div>
+        <button class="btn-config" onclick="window.location.href='adicionar.html'">⚙️ Configurações</button>
     </div>
 
     <script>
-        // Função para carregar os produtos cadastrados na página "Adicionar"
-        function carregarProdutos() {
-            const estoqueConfig = JSON.parse(localStorage.getItem('estoque_config')) || {};
-            const select = document.getElementById('produtos');
+        function carregarListas() {
+            const produtos = JSON.parse(localStorage.getItem('estoque_config')) || {};
+            const operadores = JSON.parse(localStorage.getItem('lista_operadores')) || [];
             
-            // Limpa o select
-            select.innerHTML = "";
+            const selProd = document.getElementById('select-produto');
+            const selOp = document.getElementById('select-operador');
 
-            const produtosCadastrados = Object.keys(estoqueConfig);
-
-            if (produtosCadastrados.length === 0) {
-                const opt = document.createElement('option');
-                opt.innerHTML = "Nenhum produto cadastrado";
-                select.appendChild(opt);
-                return;
-            }
-
-            // Preenche o select com os nomes dos produtos do localStorage
-            produtosCadastrados.forEach(nome => {
-                const opt = document.createElement('option');
-                opt.value = nome;
-                opt.innerHTML = nome;
-                select.appendChild(opt);
-            });
+            selProd.innerHTML = Object.keys(produtos).map(p => `<option value="${p}">${p}</option>`).join('') || '<option>Cadastre produtos</option>';
+            selOp.innerHTML = operadores.map(o => `<option value="${o}">${o}</option>`).join('') || '<option>Cadastre pessoas</option>';
         }
 
         function salvarDados() {
-            const produto = document.getElementById('produtos').value;
-            const qtd = document.getElementById('quantidade').value;
-            const estoqueConfig = JSON.parse(localStorage.getItem('estoque_config')) || {};
+            const operador = document.getElementById('select-operador').value;
+            const produto = document.getElementById('select-produto').value;
+            const qtd = parseInt(document.getElementById('quantidade').value);
+            const config = JSON.parse(localStorage.getItem('estoque_config')) || {};
 
-            if (produto === "" || produto === "Nenhum produto cadastrado") {
-                return alert("Cadastre produtos na página de configuração primeiro!");
-            }
-            
-            if (qtd === "") return alert("Digite a quantidade!");
-
-            // Pega o valor inicial que foi cadastrado para esse produto específico
-            const valorInicial = estoqueConfig[produto];
+            if (isNaN(qtd) || operador.includes("Cadastre")) return alert("Selecione a pessoa e a quantidade!");
 
             const agora = new Date();
-            const novoItem = {
-                data: agora.toLocaleDateString('pt-BR'),
-                hora: agora.getHours().toString().padStart(2, '0') + ":00",
-                nome: produto,
-                inicial: valorInicial,
-                contado: parseInt(qtd),
-                vendido: valorInicial - parseInt(qtd)
-            };
+            const dataStr = agora.toLocaleDateString('pt-BR');
+            const horaBloco = agora.getHours().toString().padStart(2, '0') + ":00";
+            const horaExata = agora.toLocaleTimeString('pt-BR');
 
             let banco = JSON.parse(localStorage.getItem('dados_estoque')) || [];
-            banco.push(novoItem);
-            localStorage.setItem('dados_estoque', JSON.stringify(banco));
+            const index = banco.findIndex(i => i.nome === produto && i.data === dataStr && i.hora === horaBloco);
 
-            alert("✅ Salvo com sucesso!");
+            if (index !== -1) {
+                banco[index].contado += qtd;
+                banco[index].vendido = banco[index].inicial - banco[index].contado;
+                banco[index].horaExata = horaExata;
+                banco[index].operador = operador; 
+            } else {
+                banco.push({
+                    data: dataStr, hora: horaBloco, horaExata: horaExata, operador: operador,
+                    nome: produto, inicial: config[produto], contado: qtd, vendido: config[produto] - qtd
+                });
+            }
+            localStorage.setItem('dados_estoque', JSON.stringify(banco));
+            alert("✅ Salvo!");
             document.getElementById('quantidade').value = "";
         }
-
-        // Executa a função assim que a página abre
-        window.onload = carregarProdutos;
+        window.onload = carregarListas;
     </script>
 </body>
 </html>

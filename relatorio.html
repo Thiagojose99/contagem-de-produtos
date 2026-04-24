@@ -1,98 +1,61 @@
-      <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Historico de Contagem</title>
+    <title>P.A.R - Relatório</title>
 </head>
 <body>
     <div class="container-relatorio">
-        <h1>Histórico de Contagem</h1>
-        
-        <div class="acoes-topo">
-            <button class="btn-excel" onclick="exportarExcel()"> Baixar Excel</button>
-            <button class="btn-limpar" onclick="limparTudo()">Limpar Tudo</button>
+        <h1>Relatório de Contagem</h1>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button class="btn-excel" onclick="exportar()">Excel</button>
+            <button class="btn-limpar" onclick="limpar()">Limpar Tudo</button>
         </div>
-
         <div id="lista-tabelas"></div>
-
-        <button class="btn-voltar" onclick="window.location.href='index.html'">← Voltar para Início</button>
+        <button class="btn-link" onclick="window.location.href='index.html'">← Voltar</button>
     </div>
 
     <script>
-        function carregarDados() {
+        function carregar() {
             const dados = JSON.parse(localStorage.getItem('dados_estoque')) || [];
             const container = document.getElementById('lista-tabelas');
-            
-            if(dados.length === 0) {
-                container.innerHTML = "<p style='text-align:center'>Nenhum registro encontrado.</p>";
-                return;
-            }
+            if (!dados.length) return container.innerHTML = "<p>Sem registros.</p>";
 
-            // Agrupar por hora
             const grupos = {};
             dados.forEach(d => {
-                const titulo = `${d.data} - ${d.hora}`;
-                if(!grupos[titulo]) grupos[titulo] = [];
-                grupos[titulo].push(d);
+                const chave = `${d.data} - ${d.hora}`;
+                if (!grupos[chave]) grupos[chave] = [];
+                grupos[chave].push(d);
             });
 
-            for (const [horario, itens] of Object.entries(grupos)) {
-                let tabelaHTML = `
-                    <div class="bloco-hora">
-                        <h3>⏰ ${horario}</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Produto</th>
-                                    <th>Inicial</th>
-                                    <th>Contado</th>
-                                    <th>Vendido</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                itens.forEach(i => {
-                    tabelaHTML += `
-                        <tr>
-                            <td>${i.nome}</td>
-                            <td>${i.inicial}</td>
-                            <td><b>${i.contado}</b></td>
-                            <td class="txt-venda">${i.vendido}</td>
-                        </tr>
-                    `;
-                });
-                tabelaHTML += `</tbody></table></div>`;
-                container.innerHTML += tabelaHTML;
-            }
+            container.innerHTML = Object.entries(grupos).map(([ref, itens]) => `
+                <div class="bloco-hora">
+                    <h3 style="background:#2c3e50">⏰ Horário: ${ref}</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Quem Contou</th>
+                                <th>Final</th>
+                                <th>Venda</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itens.map(i => `
+                            <tr>
+                                <td><b>${i.nome}</b><br><small>${i.horaExata}</small></td>
+                                <td style="color:#2980b9; font-weight:bold;">👤 ${i.operador}</td>
+                                <td style="text-align:center"><b>${i.contado}</b></td>
+                                <td class="txt-venda" style="text-align:center">${i.vendido}</td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>
+                </div>
+            `).join('');
         }
-
-        function exportarExcel() {
-            const dados = JSON.parse(localStorage.getItem('dados_estoque')) || [];
-            if(dados.length === 0) return alert("Sem dados para exportar!");
-
-            let csv = "Data;Hora;Produto;Estoque Inicial;Contado;Vendido\n";
-            dados.forEach(d => {
-                csv += `${d.data};${d.hora};${d.nome};${d.inicial};${d.contado};${d.vendido}\n`;
-            });
-
-            // \ufeff garante que o Excel reconheça acentos (UTF-8)
-            const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "relatorio_par.csv";
-            link.click();
-        }
-
-        function limparTudo() {
-            if(confirm("Deseja apagar todos os dados?")) {
-                localStorage.removeItem('dados_estoque');
-                location.reload();
-            }
-        }
-
-        window.onload = carregarDados;
+        function limpar() { if(confirm("Apagar tudo?")) { localStorage.removeItem('dados_estoque'); location.reload(); } }
+        window.onload = carregar;
     </script>
 </body>
 </html>

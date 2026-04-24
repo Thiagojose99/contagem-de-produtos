@@ -1,14 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap');
 
-
-@import url('https://fonts.googleapis.com/css2?family=Flamenco:wght@300;400&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Orbitron:wght@400..900&family=Vend+Sans:ital,wght@0,300..700;1,300..700&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 body {
-   font-family: "Open Sans", sans-serif;
- 
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+    font-family: "Open Sans", sans-serif;
     background-color: #071335;
     color: #360404;
     display: flex;
@@ -18,117 +11,61 @@ body {
 
 .container, .container-relatorio {
     background: rgb(236, 236, 240);
-    padding: 30px;
+    padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     width: 100%;
-    max-width: 600px;
-    margin-top: 110px;
+    max-width: 500px;
+    margin-top: 20px;
 }
 
-h1 { 
-    color: #2c3e50; 
-    text-align: center; 
-    margin-bottom: 25px; 
-}
-h3 { 
-    background: #3498db; 
-    color: white; padding: 10px; 
-    border-radius: 5px;
-     margin-top: 20px;
- }
+h1 { color: #2c3e50; text-align: center; margin-bottom: 20px; font-size: 1.8em; }
+h3 { background: #3498db; color: white; padding: 10px; border-radius: 5px; margin-top: 15px; font-size: 1em; }
 
-.card { 
-    margin-bottom: 20px; 
-}
-
-label {
-     font-weight: bold;
-      display: block; 
-      margin-bottom: 8px; }
+.card { margin-bottom: 15px; }
+label { font-weight: bold; display: block; margin-bottom: 5px; color: #2c3e50; }
 
 select, input {
     width: 100%;
     padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
     box-sizing: border-box;
+    font-size: 16px; /* Evita zoom automático no iPhone */
+}
+
+/* NOVA CLASSE PARA OS BOTÕES LADO A LADO */
+.botoes-lado-a-lado {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 button {
     cursor: pointer;
     border: none;
-    border-radius: 6px;
-    padding: 12px 20px;
-    transition: 0.3s;
+    border-radius: 8px;
+    padding: 15px 10px;
+    transition: 0.2s;
     font-weight: bold;
+    font-size: 14px;
+    flex: 1; /* Faz os botões dividirem o espaço igual */
 }
 
-.btn-confirmar {
-    background-color: #27ae60;
-    color: white;
-    width: 100%;
-}
+.btn-confirmar { background-color: #27ae60; color: white; }
+.btn-confirmar:hover { background-color: #1e8449; }
 
-.btn-confirmar:hover { 
-    background-color: #05381a; 
-    color: #b6cec0;
-}
+.btn-link { background-color: #2980b9; color: white; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+.btn-link:hover { background-color: #1a5276; }
 
-.btn-acao {
-    background-color: #106bc7;
-    color: white;
-    margin-top: 10px;
-}
-.btn-link:hover {
-    background-color: #0e33ac;
-    color: white;
-    margin-top: 10px;
-}
-.btn-excel{
-    background-color: #189b13;
-    color: white;
-    margin-top: 10px;
-}
-.btn-excel:hover {
-    background-color: #66a863;
-    color: white;
-    margin-top: 10px;
-}
-.btn-limpar:hover {
-    background-color: #c0392b;
-    color: white;
-    margin-top: 10px;
-}
-.btn-voltar:hover {
-    background-color: #0e33ac;
-    color: white;
-    margin-top: 10px;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 10px;
-}
+.btn-config { background-color: #7f8c8d; color: white; width: 100%; margin-top: 5px; flex: none; }
 
-th, td {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-}
+.btn-excluir { background-color: #e74c3c; color: white; padding: 5px 10px; flex: none; }
 
-th { 
-    background-color: #f9f9f9; color: #7f8c8d; }
+table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+th { background-color: #f2f2f2; color: #7f8c8d; font-size: 0.8em; }
 
-
-.venda-destaque {
-    color: #e67e22;
-    font-weight: bold;
-}
-
-.secao-relatorio { 
-    margin-bottom: 30px;
- }
-
-
+.txt-venda { color: #e67e22; font-weight: bold; }
+.hora-detalhe { display: block; font-size: 0.7em; color: #95a5a6; margin-top: 3px; }
